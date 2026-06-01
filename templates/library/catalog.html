@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Каталог{% endblock %}
+{% block content %}
+<h1>Каталог книг</h1>
+<p>Всего книг: {{ books.count }}</p>
+<ul>
+    {% for book in books %}
+        <li>{{ book.title }} — {{ book.year }}</li>
+    {% empty %}
+        <li>Книг не найдено</li>
+    {% endfor %}
+</ul>
+{% endblock %}
