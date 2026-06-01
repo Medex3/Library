@@ -1,13 +1,52 @@
 {% extends 'base.html' %}
-{% block title %}Каталог{% endblock %}
+{% block title %}Каталог книг{% endblock %}
 {% block content %}
 <h1>Каталог книг</h1>
-<p>Всего книг: {{ books.count }}</p>
-<ul>
-    {% for book in books %}
-        <li>{{ book.title }} — {{ book.year }}</li>
+
+<form method="get" class="search-form">
+    <input type="text" name="q" value="{{ query }}" placeholder="Поиск по названию, автору, ISBN...">
+    <select name="category">
+        <option value="">Все категории</option>
+        {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if selected_category == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Найти</button>
+</form>
+
+<p>Найдено книг: {{ page_obj.paginator.count }}</p>
+
+<div class="book-list">
+    {% for book in page_obj %}
+        <div class="book-card">
+            <h3><a href="{% url 'book_detail' book.pk %}">{{ book.title }}</a></h3>
+            <p>Авторы:
+                {% for author in book.authors.all %}
+                    {{ author }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    не указаны
+                {% endfor %}
+            </p>
+            <p>Год: {{ book.year|default:"—" }}</p>
+            <p>ISBN: {{ book.isbn|default:"—" }}</p>
+            <p>Категория: {{ book.category.name|default:"—" }}</p>
+        </div>
     {% empty %}
-        <li>Книг не найдено</li>
+        <p>Книг не найдено.</p>
     {% endfor %}
-</ul>
+</div>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">&laquo; Первая</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">Назад</a>
+    {% endif %}
+
+    <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">Вперёд</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">Последняя &raquo;</a>
+    {% endif %}
+</div>
 {% endblock %}
