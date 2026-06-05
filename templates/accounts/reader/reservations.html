@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Мои бронирования{% endblock %}
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'reader_dashboard' %}">Личный кабинет</a> &raquo;
+    Бронирования
+</div>
+<h1>Мои бронирования</h1>
+<table>
+    <tr><th>Книга</th><th>Дата</th><th>Статус</th><th>Действие</th></tr>
+    {% for r in reservations %}
+    <tr>
+        <td>{{ r.book.title }}</td>
+        <td>{{ r.created_at|date:"d.m.Y" }}</td>
+        <td>{{ r.get_status_display }}</td>
+        <td>{% if r.status == 'active' %}<a href="{% url 'reader_cancel_reservation' r.id %}">Отменить</a>{% endif %}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">Бронирований нет</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Управление пользователями{% endblock %}
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'admin_dashboard' %}">Панель администратора</a> &raquo;
+    Пользователи
+</div>
+<h1>Пользователи</h1>
+<table>
+    <tr><th>Логин</th><th>ФИО</th><th>Роль</th><th>Email</th><th>Активен</th><th>Действие</th></tr>
+    {% for u in users %}
+    <tr>
+        <td>{{ u.username }}</td>
+        <td>{{ u.last_name }} {{ u.first_name }}</td>
+        <td>{{ u.get_role_display }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.is_active|yesno:"Да,Нет" }}</td>
+        <td><a href="{% url 'admin_user_edit' u.id %}">Редактировать</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

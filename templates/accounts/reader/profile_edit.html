@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Редактирование профиля{% endblock %}
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'reader_dashboard' %}">Личный кабинет</a> &raquo;
+    Профиль
+</div>
+<h1>Редактирование профиля</h1>
+<form method="post">
+    {% csrf_token %}
+    <p><label>Email: <input type="email" name="email" value="{{ user.email }}"></label></p>
+    <p><label>Телефон: <input type="text" name="phone" value="{{ user.phone }}"></label></p>
+    <button type="submit">Сохранить</button>
+</form>
+{% endblock %}

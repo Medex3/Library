@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Добавить книгу{% endblock %}
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'admin_dashboard' %}">Панель администратора</a> &raquo;
+    Добавить книгу
+</div>
+<h1>Добавить книгу</h1>
+<form method="post">
+    {% csrf_token %}
+    <p><label>Название: <input type="text" name="title" required></label></p>
+    <p><label>ISBN: <input type="text" name="isbn"></label></p>
+    <p><label>УДК: <input type="text" name="udc"></label></p>
+    <p><label>ББК: <input type="text" name="bbk"></label></p>
+    <p><label>Год: <input type="number" name="year"></label></p>
+    <p><label>Страниц: <input type="number" name="pages"></label></p>
+    <p><label>Категория:
+        <select name="category">
+            <option value="">—</option>
+            {% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+        </select>
+    </label></p>
+    <p><label>Издательство:
+        <select name="publisher">
+            <option value="">—</option>
+            {% for p in publishers %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+        </select>
+    </label></p>
+    <p><label>Описание: <textarea name="description"></textarea></label></p>
+    <button type="submit">Добавить</button>
+</form>
+{% endblock %}

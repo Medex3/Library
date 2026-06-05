@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Редактирование пользователя{% endblock %}
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'admin_dashboard' %}">Панель администратора</a> &raquo;
+    <a href="{% url 'admin_users' %}">Пользователи</a> &raquo;
+    {{ edit_user.username }}
+</div>
+<h1>Редактирование: {{ edit_user.username }}</h1>
+<form method="post">
+    {% csrf_token %}
+    <p><label>Фамилия: <input type="text" name="last_name" value="{{ edit_user.last_name }}"></label></p>
+    <p><label>Имя: <input type="text" name="first_name" value="{{ edit_user.first_name }}"></label></p>
+    <p><label>Email: <input type="email" name="email" value="{{ edit_user.email }}"></label></p>
+    <p><label>Телефон: <input type="text" name="phone" value="{{ edit_user.phone }}"></label></p>
+    <p><label>Роль:
+        <select name="role">
+            <option value="reader" {% if edit_user.role == 'reader' %}selected{% endif %}>Читатель</option>
+            <option value="librarian" {% if edit_user.role == 'librarian' %}selected{% endif %}>Библиотекарь</option>
+            <option value="admin" {% if edit_user.role == 'admin' %}selected{% endif %}>Администратор</option>
+        </select>
+    </label></p>
+    <p><label><input type="checkbox" name="is_active" {% if edit_user.is_active %}checked{% endif %}> Активен</label></p>
+    <button type="submit">Сохранить</button>
+</form>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Возврат книги{% endblock %}
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'librarian_dashboard' %}">Панель библиотекаря</a> &raquo;
+    Возврат
+</div>
+<h1>Возврат книги</h1>
+<p><strong>Книга:</strong> {{ borrowing.book_instance.book.title }}</p>
+<p><strong>Читатель:</strong> {{ borrowing.user.last_name }} {{ borrowing.user.first_name }}</p>
+<p><strong>Дата выдачи:</strong> {{ borrowing.borrowed_date }}</p>
+<p><strong>Вернуть до:</strong> {{ borrowing.due_date }}</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Подтвердить возврат</button>
+</form>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Логи{% endblock %}
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'admin_dashboard' %}">Панель администратора</a> &raquo;
+    Логи
+</div>
+<h1>Логи действий</h1>
+<table>
+    <tr><th>Время</th><th>Пользователь</th><th>Действие</th><th>Описание</th></tr>
+    {% for log in logs %}
+    <tr>
+        <td>{{ log.timestamp|date:"d.m.Y H:i" }}</td>
+        <td>{{ log.user.username|default:"—" }}</td>
+        <td>{{ log.get_action_display }}</td>
+        <td>{{ log.description }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">Логов нет</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Просрочки{% endblock %}
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'librarian_dashboard' %}">Панель библиотекаря</a> &raquo;
+    Просрочки
+</div>
+<h1>Просроченные выдачи</h1>
+<table>
+    <tr><th>Книга</th><th>Читатель</th><th>Должна была вернуться</th><th>Дней просрочки</th></tr>
+    {% for b in overdue_list %}
+    <tr>
+        <td>{{ b.book_instance.book.title }}</td>
+        <td>{{ b.user.last_name }} {{ b.user.first_name }}</td>
+        <td>{{ b.due_date }}</td>
+        <td>{{ b.due_date|timesince }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">Просрочек нет</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

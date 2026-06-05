@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Личный кабинет читателя{% endblock %}
+{% block content %}
+<h1>Личный кабинет</h1>
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo; Личный кабинет
+</div>
+
+<div class="dashboard-menu">
+    <a href="{% url 'reader_borrowings' %}" class="btn">Мои выдачи</a>
+    <a href="{% url 'reader_reservations' %}" class="btn">Мои бронирования</a>
+    <a href="{% url 'reader_profile_edit' %}" class="btn">Редактировать профиль</a>
+    <a href="{% url 'catalog' %}" class="btn">Каталог книг</a>
+</div>
+
+<div class="stats">
+    <p>Активных выдач: {{ active_borrowings.count }}</p>
+    <p>Просрочек: {{ overdue_borrowings.count }}</p>
+    <p>Активных бронирований: {{ reservations.count }}</p>
+</div>
+
+{% if overdue_borrowings %}
+    <div class="alert alert-warning">
+        <h3>⚠ Просроченные книги:</h3>
+        <ul>
+            {% for b in overdue_borrowings %}
+                <li>{{ b.book_instance.book.title }} (до {{ b.due_date }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+{% endblock %}

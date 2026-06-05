@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Панель библиотекаря{% endblock %}
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo; Панель библиотекаря
+</div>
+<h1>Панель библиотекаря</h1>
+<div class="dashboard-menu">
+    <a href="{% url 'librarian_borrowings' %}" class="btn">Выдачи</a>
+    <a href="{% url 'librarian_issue_book' %}" class="btn">Выдать книгу</a>
+    <a href="{% url 'librarian_overdue' %}" class="btn">Просрочки</a>
+</div>
+<div class="stats">
+    <p>Активных выдач: {{ active_borrowings }}</p>
+    <p>Просрочек: {{ overdue_count }}</p>
+    <p>Ожидают бронирования: {{ pending_reservations }}</p>
+    <p>Всего книг: {{ total_books }}</p>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Выдать книгу{% endblock %}
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'librarian_dashboard' %}">Панель библиотекаря</a> &raquo;
+    Выдать книгу
+</div>
+<h1>Выдать книгу</h1>
+<form method="post">
+    {% csrf_token %}
+    <p>
+        <label>Экземпляр:
+            <select name="instance_id" required>
+                <option value="">Выберите...</option>
+                {% for inst in available_instances %}
+                    <option value="{{ inst.id }}">{{ inst.book.title }} — {{ inst.inventory_number }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    </p>
+    <p>
+        <label>Читатель:
+            <select name="user_id" required>
+                <option value="">Выберите...</option>
+                {% for reader in readers %}
+                    <option value="{{ reader.id }}">{{ reader.last_name }} {{ reader.first_name }} ({{ reader.username }})</option>
+                {% endfor %}
+            </select>
+        </label>
+    </p>
+    <button type="submit">Выдать</button>
+</form>
+{% endblock %}

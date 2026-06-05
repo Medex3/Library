@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Все выдачи{% endblock %}
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'librarian_dashboard' %}">Панель библиотекаря</a> &raquo;
+    Выдачи
+</div>
+<h1>Все выдачи</h1>
+<table>
+    <tr><th>Книга</th><th>Читатель</th><th>Выдана</th><th>Вернуть до</th><th>Статус</th><th>Действие</th></tr>
+    {% for b in borrowings %}
+    <tr>
+        <td>{{ b.book_instance.book.title }}</td>
+        <td>{{ b.user.last_name }} {{ b.user.first_name }}</td>
+        <td>{{ b.borrowed_date }}</td>
+        <td>{{ b.due_date }}</td>
+        <td>{{ b.get_status_display }}</td>
+        <td>
+            {% if b.status == 'active' or b.status == 'overdue' %}
+                <a href="{% url 'librarian_return_book' b.id %}">Вернуть</a>
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">Выдач нет</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}
