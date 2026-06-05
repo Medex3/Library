@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}{{ book.title }}{% endblock %}
+
 {% block content %}
 <div class="breadcrumbs">
     <a href="{% url 'home' %}">Главная</a> &raquo;
@@ -10,22 +12,47 @@
 <h1>{{ book.title }}</h1>
 
 <div class="book-detail">
-    <p><strong>Авторы:</strong>
-        {% for author in book.authors.all %}
-            {{ author }}{% if not forloop.last %}, {% endif %}
-        {% empty %}
-            не указаны
-        {% endfor %}
-    </p>
-    <p><strong>ISBN:</strong> {{ book.isbn|default:"—" }}</p>
-    <p><strong>УДК:</strong> {{ book.udc|default:"—" }}</p>
-    <p><strong>ББК:</strong> {{ book.bbk|default:"—" }}</p>
-    <p><strong>Издательство:</strong> {{ book.publisher.name|default:"—" }} ({{ book.publisher.city|default:"" }})</p>
-    <p><strong>Год издания:</strong> {{ book.year|default:"—" }}</p>
-    <p><strong>Страниц:</strong> {{ book.pages|default:"—" }}</p>
-    <p><strong>Категория:</strong> {{ book.category.name|default:"—" }}</p>
-    <p><strong>Доступно экземпляров:</strong> {{ available_instances }}</p>
-    <p><strong>Описание:</strong> {{ book.description|default:"Описание отсутствует" }}</p>
+    {% if book.cover_image %}
+        <div class="book-cover">
+            <img src="{{ book.cover_image.url }}" alt="Обложка книги {{ book.title }}" style="max-width: 250px;">
+        </div>
+    {% endif %}
+
+    <table class="book-info-table">
+        <tr>
+            <td><strong>Авторы:</strong></td>
+            <td>
+                {% for author in book.authors.all %}
+                    {{ author }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    не указаны
+                {% endfor %}
+            </td>
+        </tr>
+        <tr><td><strong>ISBN:</strong></td><td>{{ book.isbn|default:"—" }}</td></tr>
+        <tr><td><strong>УДК:</strong></td><td>{{ book.udc|default:"—" }}</td></tr>
+        <tr><td><strong>ББК:</strong></td><td>{{ book.bbk|default:"—" }}</td></tr>
+        <tr><td><strong>Издательство:</strong></td><td>{{ book.publisher.name|default:"—" }}{% if book.publisher.city %} ({{ book.publisher.city }}){% endif %}</td></tr>
+        <tr><td><strong>Год издания:</strong></td><td>{{ book.year|default:"—" }}</td></tr>
+        <tr><td><strong>Страниц:</strong></td><td>{{ book.pages|default:"—" }}</td></tr>
+        <tr><td><strong>Категория:</strong></td><td>{{ book.category.name|default:"—" }}</td></tr>
+        <tr><td><strong>Доступно экземпляров:</strong></td><td>{{ available_instances }}</td></tr>
+    </table>
+
+    {% if book.description %}
+        <div class="book-description">
+            <h3>Описание</h3>
+            <p>{{ book.description }}</p>
+        </div>
+    {% endif %}
+
+    {% if book.file %}
+        <div class="book-download">
+            <a href="{{ book.file.url }}" class="btn btn-download" download>
+                📥 Скачать книгу (PDF)
+            </a>
+        </div>
+    {% endif %}
 </div>
 
 <a href="{% url 'catalog' %}">← Назад к каталогу</a>

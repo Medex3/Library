@@ -19,7 +19,17 @@
 <div class="book-list">
     {% for book in page_obj %}
         <div class="book-card">
-            <h3><a href="{% url 'book_detail' book.pk %}">{{ book.title }}</a></h3>
+            {% if book.cover_image %}
+                <div class="book-card-cover">
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="max-width: 100px; max-height: 150px;">
+                </div>
+            {% endif %}
+            <h3>
+                <a href="{% url 'book_detail' book.pk %}">{{ book.title }}</a>
+                {% if book.file %}
+                    <span title="Доступен для скачивания">📥</span>
+                {% endif %}
+            </h3>
             <p>Авторы:
                 {% for author in book.authors.all %}
                     {{ author }}{% if not forloop.last %}, {% endif %}
