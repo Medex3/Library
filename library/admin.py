@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from .models import Feedback
 from .models import User, Category, Publisher, Author, Book, BookAuthor, BookInstance, Borrowing, Reservation, Notification, ActionLog
 
 
@@ -65,3 +66,8 @@ class NotificationAdmin(admin.ModelAdmin):
 class ActionLogAdmin(admin.ModelAdmin):
     list_display = ('user', 'action', 'timestamp')
     list_filter = ('action',)
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ('subject', 'name', 'email', 'created_at', 'is_read')
+    list_filter = ('is_read',)

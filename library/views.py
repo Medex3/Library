@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db import models
 from .models import Book, Category
+from .models import Feedback
+from django.contrib import messages
 
 
 def home(request):
@@ -54,3 +56,15 @@ def about(request):
 
 def contacts(request):
     return render(request, 'library/contacts.html')
+
+def feedback(request):
+    if request.method == 'POST':
+        Feedback.objects.create(
+            name=request.POST.get('name', ''),
+            email=request.POST.get('email', ''),
+            subject=request.POST.get('subject', ''),
+            message=request.POST.get('message', ''),
+        )
+        messages.success(request, 'Ваше сообщение отправлено!')
+        return redirect('feedback')
+    return render(request, 'library/feedback.html')

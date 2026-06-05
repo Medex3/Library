@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Обратная связь{% endblock %}
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo; Обратная связь
+</div>
+<h1>Обратная связь</h1>
+<form method="post">
+    {% csrf_token %}
+    <p><label>Имя: <input type="text" name="name" required></label></p>
+    <p><label>Email: <input type="email" name="email" required></label></p>
+    <p><label>Тема: <input type="text" name="subject" required></label></p>
+    <p><label>Сообщение: <textarea name="message" required></textarea></label></p>
+    <button type="submit">Отправить</button>
+</form>
+{% endblock %}

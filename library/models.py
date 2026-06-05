@@ -200,3 +200,19 @@ class ActionLog(models.Model):
     class Meta:
         verbose_name = 'Лог'
         verbose_name_plural = 'Логи'
+
+# 12. Обратная связь
+class Feedback(models.Model):
+    name = models.CharField(max_length=200, verbose_name='Имя')
+    email = models.EmailField(verbose_name='Email')
+    subject = models.CharField(max_length=300, verbose_name='Тема')
+    message = models.TextField(verbose_name='Сообщение')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата')
+    is_read = models.BooleanField(default=False, verbose_name='Прочитано')
+
+    class Meta:
+        verbose_name = 'Обращение'
+        verbose_name_plural = 'Обратная связь'
+
+    def __str__(self):
+        return f'{self.subject} — {self.name}'
