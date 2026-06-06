@@ -4,6 +4,14 @@ from django.utils import timezone
 
 
 # 1. Расширенная модель пользователя
+
+"""
+Расширенная модель пользователя с поддержкой трёх ролей:
+admin — администратор системы (полный доступ),
+librarian — библиотекарь (выдача/возврат, отчёты),
+reader — читатель (поиск, бронирование, история).
+"""
+
 class User(AbstractUser):
     ROLE_CHOICES = [
         ('admin', 'Администратор'),
@@ -24,6 +32,12 @@ class User(AbstractUser):
 
 
 # 2. Категория
+
+    """
+    Тематическая категория книг (например: «Математика», «Физика», «Программирование»).
+    Используется для фильтрации в каталоге и в отчёте по статистике.
+    """
+
 class Category(models.Model):
     name = models.CharField(max_length=200, unique=True, verbose_name='Название')
     description = models.TextField(blank=True, verbose_name='Описание')
@@ -64,6 +78,13 @@ class Author(models.Model):
 
 
 # 5. Книга
+
+    """
+    Основная модель книги. Содержит библиографические данные (ISBN, УДК, ББК),
+    связи с авторами (через BookAuthor), категорией и издательством.
+    Поля cover_image и file позволяют загружать обложку и PDF-файл книги.
+    """
+
 class Book(models.Model):
     title = models.CharField(max_length=500, verbose_name='Название')
     isbn = models.CharField(max_length=20, unique=True, blank=True, null=True, verbose_name='ISBN')
@@ -88,6 +109,12 @@ class Book(models.Model):
 
 
 # 6. Связь Книга-Автор
+
+    """
+    Промежуточная модель для связи «многие ко многим» между Book и Author.
+    Поле order задаёт порядок авторов при отображении.
+    """
+
 class BookAuthor(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
@@ -100,6 +127,13 @@ class BookAuthor(models.Model):
 
 
 # 7. Экземпляр книги
+
+    """
+    Физический экземпляр книги с уникальным инвентарным номером.
+    Статус: в наличии, выдана, забронирована, в ремонте, утеряна.
+    Связан с Book через related_name='instances'.
+    """
+
 class BookInstance(models.Model):
     STATUS_CHOICES = [
         ('available', 'В наличии'),
@@ -122,6 +156,12 @@ class BookInstance(models.Model):
 
 
 # 8. Выдача/возврат
+
+    """
+    Запись о выдаче книги читателю. Содержит дату выдачи, плановую и фактическую дату возврата.
+    Статус: активна, возвращена, просрочена.
+    """
+
 class Borrowing(models.Model):
     STATUS_CHOICES = [
         ('active', 'Выдана'),
@@ -145,6 +185,12 @@ class Borrowing(models.Model):
 
 
 # 9. Бронирование
+
+    """
+    Бронирование книги читателем. Статусы: активно, выполнено, отменено.
+    Библиотекарь может подтвердить (fulfilled) или отменить (cancelled) бронирование.
+    """
+
 class Reservation(models.Model):
     STATUS_CHOICES = [
         ('active', 'Активно'),
@@ -162,6 +208,12 @@ class Reservation(models.Model):
 
 
 # 10. Уведомление
+
+    """
+    Внутрисайтовое уведомление пользователю.
+    Типы: напоминание о возврате, просрочка, книга доступна, системное.
+    """
+
 class Notification(models.Model):
     TYPE_CHOICES = [
         ('due_reminder', 'Напоминание о возврате'),
@@ -181,6 +233,12 @@ class Notification(models.Model):
 
 
 # 11. Лог действий
+
+    """
+    Журнал действий пользователей в системе.
+    Фиксирует вход/выход, выдачу/возврат книг, добавление книг, формирование отчётов.
+    """
+
 class ActionLog(models.Model):
     ACTION_CHOICES = [
         ('login', 'Вход'),
@@ -202,6 +260,12 @@ class ActionLog(models.Model):
         verbose_name_plural = 'Логи'
 
 # 12. Обратная связь
+
+    """
+    Сообщения от пользователей через форму обратной связи.
+    Хранит имя, email, тему и текст сообщения.
+    """
+
 class Feedback(models.Model):
     name = models.CharField(max_length=200, verbose_name='Имя')
     email = models.EmailField(verbose_name='Email')
