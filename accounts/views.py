@@ -4,8 +4,9 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.utils import timezone
 from .forms import CustomUserCreationForm
-from library.models import Book, BookInstance, Borrowing, Reservation, ActionLog
+from library.models import Book, BookInstance, Borrowing, Reservation, ActionLog, User
 from datetime import datetime, timedelta
+
 
 
 
@@ -157,6 +158,7 @@ def librarian_issue_book(request):
         instance_id = request.POST.get('instance_id')
         user_id = request.POST.get('user_id')
         instance = get_object_or_404(BookInstance, id=instance_id, status='available')
+        from library.models import User
         user = get_object_or_404(User, id=user_id)
         instance.status = 'borrowed'
         instance.save()
@@ -168,11 +170,6 @@ def librarian_issue_book(request):
             issued_by=request.user
         )
         messages.success(request, f'Книга выдана пользователю {user}.')
-        ActionLog.objects.create(
-            user=request.user,
-            action='borrow',
-            description=f'Выдана книга "{book.title}" пользователю {user} (до {due_date})'
-        )
         ActionLog.objects.create(
             user=request.user,
             action='borrow',
