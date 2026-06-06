@@ -23,6 +23,12 @@ urlpatterns = [
     path('librarian/return/<int:borrowing_id>/', views.librarian_return_book, name='librarian_return_book'),
     path('librarian/overdue/', views.librarian_overdue, name='librarian_overdue'),
 
+    # Отчёты (библиотекарь + админ)
+    path('librarian/reports/', views.reports_index, name='reports_index'),
+    path('librarian/reports/borrowings/', views.report_borrowings_view, name='report_borrowings'),
+    path('librarian/reports/overdue/', views.report_overdue_view, name='report_overdue'),
+    path('librarian/reports/categories/', views.report_category_view, name='report_categories'),
+
     # Администратор
     path('admin-panel/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-panel/users/', views.admin_users, name='admin_users'),

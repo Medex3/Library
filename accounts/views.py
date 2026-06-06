@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.utils import timezone
 from .forms import CustomUserCreationForm
 from library.models import Book, BookInstance, Borrowing, Reservation
+from datetime import datetime, timedelta
 
 
 def is_librarian(user):
@@ -188,6 +189,44 @@ def librarian_overdue(request):
         status='active', due_date__lt=timezone.now().date()
     ).select_related('book_instance__book', 'user')
     return render(request, 'accounts/librarian/overdue.html', {'overdue_list': overdue_list})
+
+# ---------- Отчёты (библиотекарь + админ) ----------
+from .reports import report_borrowings_by_period, report_overdue, report_category_stats
+from datetime import datetime
+
+
+@login_required
+@user_passes_test(is_librarian)
+def reports_index(request):
+    """Страница-оглавление всех отчётов"""
+    return render(request, 'accounts/librarian/reports.html')
+
+
+@login_required
+@user_passes_test(is_librarian)
+def report_borrowings_view(request):
+    """Генерация отчёта: выдачи за период"""
+    today = timezone.now().date()
+    start_str = request.GET.get('start', (today - timedelta(days=30)).strftime('%Y-%m-%d'))
+    end_str = request.GET.get('end', today.strftime('%Y-%m-%d'))
+    start_date = datetime.strptime(start_str, '%Y-%m-%d').date()
+    end_date = datetime.strptime(end_str, '%Y-%m-%d').date()
+    return report_borrowings_by_period(start_date, end_date)
+
+
+@login_required
+@user_passes_test(is_librarian)
+def report_overdue_view(request):
+    """Генерация отчёта: должники"""
+    return report_overdue()
+
+
+@login_required
+@user_passes_test(is_librarian)
+def report_category_view(request):
+    """Генерация отчёта: статистика по категориям"""
+    return report_category_stats()
+
 
 # ---------- Администратор ----------
 
