@@ -89,6 +89,13 @@ def reader_borrowings(request):
     borrowings = Borrowing.objects.filter(user=request.user).order_by('-borrowed_date')
     return render(request, 'accounts/reader/borrowings.html', {'borrowings': borrowings})
 
+@login_required
+def reader_history(request):
+    history = Borrowing.objects.filter(
+        user=request.user,
+        status='returned'
+    ).select_related('book_instance__book').order_by('-returned_date')
+    return render(request, 'accounts/reader/history.html', {'history': history})
 
 @login_required
 def reader_reservations(request):

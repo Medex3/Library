@@ -15,6 +15,7 @@ urlpatterns = [
     path('reader/cancel-reservation/<int:reservation_id>/', views.reader_cancel_reservation,
          name='reader_cancel_reservation'),
     path('reader/profile/', views.reader_profile_edit, name='reader_profile_edit'),
+    path('reader/history/', views.reader_history, name='reader_history'),
 
     # Библиотекарь
     path('librarian/', views.librarian_dashboard, name='librarian_dashboard'),

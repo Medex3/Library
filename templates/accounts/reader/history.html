@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}История чтения{% endblock %}
+
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'reader_dashboard' %}">Личный кабинет</a> &raquo;
+    История чтения
+</div>
+
+<h1>📚 История чтения</h1>
+
+{% if history %}
+    <table>
+        <tr>
+            <th>Книга</th>
+            <th>Дата выдачи</th>
+            <th>Дата возврата</th>
+        </tr>
+        {% for b in history %}
+        <tr>
+            <td>
+                <a href="{% url 'book_detail' b.book_instance.book.pk %}">
+                    {{ b.book_instance.book.title }}
+                </a>
+            </td>
+            <td>{{ b.borrowed_date|date:"d.m.Y" }}</td>
+            <td>{{ b.returned_date|date:"d.m.Y" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>Вы пока не прочитали ни одной книги.</p>
+{% endif %}
+
+<a href="{% url 'reader_dashboard' %}">← Назад в личный кабинет</a>
+{% endblock %}
