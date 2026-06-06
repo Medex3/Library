@@ -4,8 +4,9 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.utils import timezone
 from .forms import CustomUserCreationForm
-from library.models import Book, BookInstance, Borrowing, Reservation
+from library.models import Book, BookInstance, Borrowing, Reservation, ActionLog
 from datetime import datetime, timedelta
+
 
 
 def is_librarian(user):
@@ -40,6 +41,11 @@ def user_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            ActionLog.objects.create(
+                user=user,
+                action='login',
+                description=f'Пользователь {user.username} вошёл в систему (роль: {user.get_role_display()})'
+            )
             messages.success(request, f'Добро пожаловать, {user.first_name}!')
             if user.role == 'admin':
                 return redirect('admin_dashboard')
@@ -52,6 +58,12 @@ def user_login(request):
 
 
 def user_logout(request):
+    if request.user.is_authenticated:
+        ActionLog.objects.create(
+            user=request.user,
+            action='logout',
+            description=f'Пользователь {request.user.username} вышел из системы'
+        )
     logout(request)
     messages.info(request, 'Вы вышли из системы.')
     return redirect('home')
@@ -156,6 +168,16 @@ def librarian_issue_book(request):
             issued_by=request.user
         )
         messages.success(request, f'Книга выдана пользователю {user}.')
+        ActionLog.objects.create(
+            user=request.user,
+            action='borrow',
+            description=f'Выдана книга "{book.title}" пользователю {user} (до {due_date})'
+        )
+        ActionLog.objects.create(
+            user=request.user,
+            action='borrow',
+            description=f'Выдана книга "{instance.book.title}" пользователю {user} (до {due_date})'
+        )
         return redirect('librarian_borrowings')
 
     from library.models import User
@@ -177,6 +199,11 @@ def librarian_return_book(request, borrowing_id):
         borrowing.status = 'returned'
         borrowing.returned_date = timezone.now().date()
         borrowing.save()
+        ActionLog.objects.create(
+            user=request.user,
+            action='return',
+            description=f'Возврат книги "{borrowing.book_instance.book.title}" от {borrowing.user}'
+        )
         messages.success(request, 'Книга возвращена.')
         return redirect('librarian_borrowings')
     return render(request, 'accounts/librarian/return_book.html', {'borrowing': borrowing})
@@ -211,12 +238,22 @@ def report_borrowings_view(request):
     end_str = request.GET.get('end', today.strftime('%Y-%m-%d'))
     start_date = datetime.strptime(start_str, '%Y-%m-%d').date()
     end_date = datetime.strptime(end_str, '%Y-%m-%d').date()
+    ActionLog.objects.create(
+        user=request.user,
+        action='report',
+        description=f'Сформирован отчёт "Выдачи за период": {start_date} – {end_date}'
+    )
     return report_borrowings_by_period(start_date, end_date)
 
 
 @login_required
 @user_passes_test(is_librarian)
 def report_overdue_view(request):
+    ActionLog.objects.create(
+        user=request.user,
+        action='report',
+        description='Сформирован отчёт "Должники"'
+    )
     """Генерация отчёта: должники"""
     return report_overdue()
 
@@ -224,6 +261,11 @@ def report_overdue_view(request):
 @login_required
 @user_passes_test(is_librarian)
 def report_category_view(request):
+    ActionLog.objects.create(
+        user=request.user,
+        action='report',
+        description='Сформирован отчёт "Статистика по категориям"'
+    )
     """Генерация отчёта: статистика по категориям"""
     return report_category_stats()
 
@@ -287,6 +329,11 @@ def admin_add_book(request):
             description=request.POST.get('description', ''),
             category_id=request.POST.get('category') or None,
             publisher_id=request.POST.get('publisher') or None,
+        )
+        ActionLog.objects.create(
+            user=request.user,
+            action='add_book',
+            description=f'Добавлена книга "{book.title}" (ID: {book.id})'
         )
         messages.success(request, f'Книга "{book.title}" добавлена.')
         return redirect('admin_add_book')
