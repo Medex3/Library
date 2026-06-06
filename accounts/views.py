@@ -98,6 +98,14 @@ def reader_history(request):
     return render(request, 'accounts/reader/history.html', {'history': history})
 
 @login_required
+def reader_notifications(request):
+    from library.models import Notification
+    notifications = Notification.objects.filter(
+        user=request.user
+    ).order_by('-created_at')[:50]
+    return render(request, 'accounts/reader/notifications.html', {'notifications': notifications})
+
+@login_required
 def reader_reservations(request):
     reservations = Reservation.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'accounts/reader/reservations.html', {'reservations': reservations})
