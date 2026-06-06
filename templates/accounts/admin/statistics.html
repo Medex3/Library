@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Статистика{% endblock %}
+
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'admin_dashboard' %}">Панель администратора</a> &raquo;
+    Статистика
+</div>
+
+<h1>📊 Статистика системы</h1>
+
+<div class="stats-grid">
+    <div class="stat-card"><span class="stat-number">{{ total_users }}</span><span class="stat-label">Пользователей</span></div>
+    <div class="stat-card"><span class="stat-number">{{ total_readers }}</span><span class="stat-label">Читателей</span></div>
+    <div class="stat-card"><span class="stat-number">{{ total_librarians }}</span><span class="stat-label">Библиотекарей</span></div>
+    <div class="stat-card"><span class="stat-number">{{ total_books }}</span><span class="stat-label">Книг</span></div>
+    <div class="stat-card"><span class="stat-number">{{ total_instances }}</span><span class="stat-label">Экземпляров</span></div>
+    <div class="stat-card"><span class="stat-number">{{ available_instances }}</span><span class="stat-label">Доступно</span></div>
+    <div class="stat-card"><span class="stat-number">{{ borrowed_instances }}</span><span class="stat-label">На руках</span></div>
+    <div class="stat-card"><span class="stat-number">{{ active_borrowings }}</span><span class="stat-label">Активных выдач</span></div>
+    <div class="stat-card"><span class="stat-number">{{ overdue_count }}</span><span class="stat-label">Просрочек</span></div>
+    <div class="stat-card"><span class="stat-number">{{ total_reservations }}</span><span class="stat-label">Бронирований</span></div>
+    <div class="stat-card"><span class="stat-number">{{ total_feedback }}</span><span class="stat-label">Обращений</span></div>
+    <div class="stat-card"><span class="stat-number">{{ total_categories }}</span><span class="stat-label">Категорий</span></div>
+</div>
+
+{% if top_books %}
+<h2>🏆 Топ-5 книг по выдачам</h2>
+<table>
+    <tr><th>№</th><th>Книга</th><th>Выдач</th></tr>
+    {% for book in top_books %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ book.title }}</td>
+        <td>{{ book.borrow_count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<a href="{% url 'admin_dashboard' %}">← Назад к панели</a>
+{% endblock %}

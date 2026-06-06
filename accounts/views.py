@@ -4,8 +4,9 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.utils import timezone
 from .forms import CustomUserCreationForm
-from library.models import Book, BookInstance, Borrowing, Reservation, ActionLog, User, Notification
+from library.models import Book, BookInstance, Borrowing, Reservation, ActionLog, User, Notification, Feedback
 from datetime import datetime, timedelta
+
 
 
 
@@ -459,4 +460,48 @@ def admin_references(request):
         'categories': categories,
         'publishers': publishers,
         'authors': authors,
+    })
+
+@login_required
+@user_passes_test(is_admin)
+def admin_statistics(request):
+    from library.models import User, Category, Publisher
+    from django.db.models import Count
+
+    total_users = User.objects.count()
+    total_readers = User.objects.filter(role='reader').count()
+    total_librarians = User.objects.filter(role='librarian').count()
+    total_books = Book.objects.count()
+    total_instances = BookInstance.objects.count()
+    available_instances = BookInstance.objects.filter(status='available').count()
+    borrowed_instances = BookInstance.objects.filter(status='borrowed').count()
+    total_borrowings = Borrowing.objects.count()
+    active_borrowings = Borrowing.objects.filter(status='active').count()
+    overdue_count = Borrowing.objects.filter(status='active', due_date__lt=timezone.now().date()).count()
+    total_reservations = Reservation.objects.filter(status='active').count()
+    total_categories = Category.objects.count()
+    total_publishers = Publisher.objects.count()
+    total_feedback = Feedback.objects.count()
+
+    # Топ-5 книг по выдачам
+    top_books = Book.objects.annotate(
+        borrow_count=Count('instances__borrowing')
+    ).order_by('-borrow_count')[:5]
+
+    return render(request, 'accounts/admin/statistics.html', {
+        'total_users': total_users,
+        'total_readers': total_readers,
+        'total_librarians': total_librarians,
+        'total_books': total_books,
+        'total_instances': total_instances,
+        'available_instances': available_instances,
+        'borrowed_instances': borrowed_instances,
+        'total_borrowings': total_borrowings,
+        'active_borrowings': active_borrowings,
+        'overdue_count': overdue_count,
+        'total_reservations': total_reservations,
+        'total_categories': total_categories,
+        'total_publishers': total_publishers,
+        'total_feedback': total_feedback,
+        'top_books': top_books,
     })
