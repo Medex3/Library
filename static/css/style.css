@@ -1,133 +1,526 @@
+/* ============================================================
+   БАЗОВЫЕ СБРОСЫ И ПЕРЕМЕННЫЕ
+   ============================================================ */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    background: #f4f4f4;
+:root {
+    --primary: #1a3c6e;
+    --primary-light: #2a5a9e;
+    --primary-dark: #0f2440;
+    --accent: #e8a817;
+    --success: #28a745;
+    --danger: #dc3545;
+    --info: #17a2b8;
+    --bg: #f0f2f5;
+    --white: #ffffff;
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+    --gray-500: #6c757d;
+    --gray-700: #495057;
+    --gray-900: #212529;
+    --radius: 8px;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.12);
+    --transition: 0.2s ease;
 }
 
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    background: var(--bg);
+    color: var(--gray-900);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================================
+   HEADER И НАВИГАЦИЯ
+   ============================================================ */
 header {
-    background: #1a3c6e;
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
     color: white;
-    padding: 1rem;
+    padding: 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.user-nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 0.5rem 2rem;
+    background: rgba(0,0,0,0.15);
+    font-size: 0.85em;
+}
+
+.user-nav a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.user-nav a:hover {
+    color: white;
+    background: rgba(255,255,255,0.1);
+}
+
+nav {
+    padding: 0.75rem 2rem;
 }
 
 .menu {
     list-style: none;
     display: flex;
-    gap: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.25rem;
 }
 
 .menu a {
-    color: white;
+    color: rgba(255,255,255,0.9);
     text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: var(--transition);
+    font-weight: 500;
+    font-size: 0.95em;
 }
 
 .menu a:hover {
-    text-decoration: underline;
+    background: rgba(255,255,255,0.12);
+    color: white;
 }
 
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
 main {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-footer {
-    text-align: center;
-    padding: 1rem;
-    background: #1a3c6e;
-    color: white;
-    margin-top: 2rem;
-}
-
-.search-form {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.search-form input[type="text"] {
     flex: 1;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
 }
 
-.search-form select {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+/* ============================================================
+   ТИПОГРАФИКА
+   ============================================================ */
+h1 {
+    color: var(--primary-dark);
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    border-bottom: 2px solid var(--gray-200);
+    padding-bottom: 0.5rem;
 }
 
-.search-form button {
-    padding: 0.5rem 1rem;
-    background: #1a3c6e;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+h2 {
+    color: var(--primary);
+    margin: 1.5rem 0 1rem;
+    font-size: 1.4rem;
 }
 
-.book-card {
-    border: 1px solid #ddd;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border-radius: 6px;
+h3 {
+    color: var(--gray-700);
+    margin-bottom: 0.75rem;
 }
 
-.book-card h3 {
-    margin-bottom: 0.5rem;
-}
-
-.pagination {
-    margin-top: 1.5rem;
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
+/* ============================================================
+   ХЛЕБНЫЕ КРОШКИ
+   ============================================================ */
 .breadcrumbs {
-    margin-bottom: 1rem;
-    color: #666;
+    margin-bottom: 1.5rem;
+    color: var(--gray-500);
+    font-size: 0.9em;
+    padding: 0.5rem 0;
 }
 
 .breadcrumbs a {
-    color: #1a3c6e;
+    color: var(--primary-light);
     text-decoration: none;
+    transition: var(--transition);
 }
 
-.book-detail p {
-    margin-bottom: 0.5rem;
+.breadcrumbs a:hover {
+    color: var(--primary);
+    text-decoration: underline;
 }
 
+/* ============================================================
+   СООБЩЕНИЯ
+   ============================================================ */
 .messages {
     list-style: none;
     margin-bottom: 1rem;
 }
 
+.messages li {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
 .messages .success {
     background: #d4edda;
     color: #155724;
-    padding: 0.5rem;
-    border-radius: 4px;
+    border-left: 4px solid var(--success);
 }
 
 .messages .info {
     background: #d1ecf1;
     color: #0c5460;
-    padding: 0.5rem;
-    border-radius: 4px;
+    border-left: 4px solid var(--info);
 }
 
-/* --- Отчёты --- */
+.messages .warning {
+    background: #fff3cd;
+    color: #856404;
+    border-left: 4px solid var(--accent);
+}
+
+.messages .error {
+    background: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid var(--danger);
+}
+
+/* ============================================================
+   КНОПКИ И ССЫЛКИ
+   ============================================================ */
+.btn, button[type="submit"] {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.btn:hover, button[type="submit"]:hover {
+    background: var(--primary-light);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.btn-success {
+    background: var(--success);
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+.btn-danger {
+    background: var(--danger);
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.btn-download {
+    display: inline-block;
+    background: var(--success);
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    text-decoration: none;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.btn-download:hover {
+    background: #218838;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+a {
+    color: var(--primary-light);
+    transition: var(--transition);
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+/* ============================================================
+   ФОРМЫ
+   ============================================================ */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="number"],
+select,
+textarea {
+    padding: 0.6rem 0.8rem;
+    border: 2px solid var(--gray-300);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: var(--transition);
+    width: 100%;
+    max-width: 400px;
+    font-family: inherit;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(26,60,110,0.1);
+}
+
+label {
+    font-weight: 500;
+    color: var(--gray-700);
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.search-form {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    padding: 1.25rem;
+    background: var(--gray-100);
+    border-radius: var(--radius);
+}
+
+.search-form input[type="text"] {
+    flex: 2;
+    min-width: 200px;
+    max-width: 100%;
+}
+
+.search-form select {
+    flex: 1;
+    min-width: 150px;
+    max-width: 100%;
+}
+
+.search-form button {
+    flex: 0;
+    white-space: nowrap;
+}
+
+/* ============================================================
+   КАРТОЧКИ КНИГ
+   ============================================================ */
+.book-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.book-card {
+    border: 1px solid var(--gray-300);
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    background: var(--white);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.book-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    border-color: var(--primary-light);
+}
+
+.book-card-cover {
+    text-align: center;
+    margin-bottom: 0.75rem;
+}
+
+.book-card-cover img {
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+}
+
+.book-card h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.book-card h3 a {
+    color: var(--primary-dark);
+    text-decoration: none;
+}
+
+.book-card h3 a:hover {
+    color: var(--primary-light);
+}
+
+.book-card p {
+    color: var(--gray-500);
+    font-size: 0.9em;
+    margin-bottom: 0.25rem;
+}
+
+/* ============================================================
+   ДЕТАЛЬНАЯ СТРАНИЦА КНИГИ
+   ============================================================ */
+.book-detail {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.book-cover img {
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    max-width: 100%;
+}
+
+.book-info-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.book-info-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.book-info-table td:first-child {
+    color: var(--gray-500);
+    white-space: nowrap;
+    width: 220px;
+}
+
+.book-description {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: var(--gray-100);
+    border-radius: var(--radius);
+}
+
+.book-description h3 {
+    margin-bottom: 0.5rem;
+}
+
+.book-download {
+    margin: 1.5rem 0;
+}
+
+/* ============================================================
+   ТАБЛИЦЫ
+   ============================================================ */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--gray-300);
+}
+
+th {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tr:hover td {
+    background: var(--gray-100);
+}
+
+/* ============================================================
+   ПАГИНАЦИЯ
+   ============================================================ */
+.pagination {
+    margin-top: 2rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination a,
+.pagination span {
+    padding: 0.5rem 0.9rem;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--primary);
+    border: 1px solid var(--gray-300);
+    transition: var(--transition);
+}
+
+.pagination a:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.pagination .current {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    font-weight: 600;
+}
+
+/* ============================================================
+   DASHBOARD — СТАТИСТИКА
+   ============================================================ */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    text-align: center;
+}
+
+.stat-card .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    display: block;
+}
+
+.stat-card .stat-label {
+    font-size: 0.9em;
+    opacity: 0.9;
+    margin-top: 0.25rem;
+}
+
+/* ============================================================
+   ОТЧЁТЫ
+   ============================================================ */
 .reports-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -136,45 +529,192 @@ footer {
 }
 
 .report-card {
-    background: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
+    background: var(--white);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: var(--transition);
+}
+
+.report-card:hover {
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow);
 }
 
 .report-card h3 {
     margin-top: 0;
-    color: #333;
+    color: var(--primary-dark);
 }
 
 .report-card p {
-    color: #666;
-    margin-bottom: 15px;
+    color: var(--gray-500);
+    margin-bottom: 1rem;
 }
 
 .report-form label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem;
     font-size: 0.9em;
 }
 
 .report-form input[type="date"] {
-    padding: 6px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-left: 5px;
+    padding: 0.4rem 0.6rem;
+    margin-left: 0.25rem;
+    max-width: 160px;
 }
 
-.btn-download {
-    display: inline-block;
-    background: #28a745;
-    color: #fff;
-    padding: 8px 16px;
-    text-decoration: none;
-    border-radius: 4px;
-    margin-top: 10px;
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+    text-align: center;
+    padding: 1.25rem;
+    background: var(--primary-dark);
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9em;
+    margin-top: auto;
 }
 
-.btn-download:hover {
-    background: #218838;
+/* ============================================================
+   АДАПТИВНОСТЬ (MEDIA QUERIES)
+   ============================================================ */
+
+/* Планшеты */
+@media (max-width: 1024px) {
+    main {
+        margin: 1rem;
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+
+    .book-detail {
+        grid-template-columns: 200px 1fr;
+        gap: 1.5rem;
+    }
+}
+
+/* Маленькие планшеты */
+@media (max-width: 768px) {
+    header {
+        position: relative;
+    }
+
+    .user-nav {
+        justify-content: center;
+        padding: 0.5rem;
+        gap: 0.5rem;
+        font-size: 0.8em;
+        flex-wrap: wrap;
+    }
+
+    .menu {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .menu a {
+        display: block;
+        padding: 0.6rem 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    main {
+        margin: 0.5rem;
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+    }
+
+    .book-detail {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .book-cover {
+        text-align: center;
+    }
+
+    .book-cover img {
+        max-width: 200px;
+    }
+
+    .book-info-table td:first-child {
+        width: 130px;
+    }
+
+    .search-form {
+        flex-direction: column;
+    }
+
+    .search-form input[type="text"],
+    .search-form select {
+        max-width: 100%;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-card .stat-number {
+        font-size: 1.8rem;
+    }
+
+    .reports-grid {
+        grid-template-columns: 1fr;
+    }
+
+    table {
+        font-size: 0.85em;
+    }
+
+    th, td {
+        padding: 0.5rem;
+    }
+}
+
+/* Мобильные */
+@media (max-width: 480px) {
+    .user-nav {
+        font-size: 0.75em;
+    }
+
+    nav {
+        padding: 0.5rem;
+    }
+
+    main {
+        margin: 0.25rem;
+        padding: 0.75rem;
+        border-radius: 0;
+    }
+
+    h1 {
+        font-size: 1.2rem;
+    }
+
+    .book-list {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .pagination a,
+    .pagination span {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85em;
+    }
+
+    th, td {
+        padding: 0.4rem;
+        font-size: 0.8em;
+    }
 }
