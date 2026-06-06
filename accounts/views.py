@@ -275,6 +275,10 @@ def librarian_add_instance(request):
         book_id = request.POST.get('book_id')
         inventory_number = request.POST.get('inventory_number', '')
         book = get_object_or_404(Book, id=book_id)
+        if inventory_number and BookInstance.objects.filter(inventory_number=inventory_number).exists():
+            messages.error(request, f'Экземпляр с инвентарным номером "{inventory_number}" уже существует.')
+            return redirect('librarian_add_instance')
+
         BookInstance.objects.create(
             book=book,
             inventory_number=inventory_number,
