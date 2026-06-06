@@ -66,7 +66,7 @@ class Author(models.Model):
 # 5. Книга
 class Book(models.Model):
     title = models.CharField(max_length=500, verbose_name='Название')
-    isbn = models.CharField(max_length=20, unique=True, blank=True, verbose_name='ISBN')
+    isbn = models.CharField(max_length=20, unique=True, blank=True, null=True, verbose_name='ISBN')
     udc = models.CharField(max_length=50, blank=True, verbose_name='УДК')
     bbk = models.CharField(max_length=50, blank=True, verbose_name='ББК')
     authors = models.ManyToManyField(Author, through='BookAuthor', verbose_name='Авторы')

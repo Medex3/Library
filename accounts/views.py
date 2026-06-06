@@ -397,14 +397,56 @@ def admin_user_edit(request, user_id):
 def admin_add_book(request):
     from library.models import Category, Publisher, Author
     if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        isbn = request.POST.get('isbn', '').strip()
+
+        if not title:
+            messages.error(request, 'Название книги обязательно.')
+            return redirect('admin_add_book')
+
+        if isbn and Book.objects.filter(isbn=isbn).exists():
+            messages.error(request, f'Книга с ISBN "{isbn}" уже существует.')
+            return redirect('admin_add_book')
+
         book = Book.objects.create(
-            title=request.POST.get('title'),
-            isbn=request.POST.get('isbn', ''),
-            udc=request.POST.get('udc', ''),
-            bbk=request.POST.get('bbk', ''),
+            title=title,
+            isbn=isbn,
+            udc=request.POST.get('udc', '').strip(),
+            bbk=request.POST.get('bbk', '').strip(),
             year=request.POST.get('year') or None,
             pages=request.POST.get('pages') or None,
-            description=request.POST.get('description', ''),
+            description=request.POST.get('description', '').strip(),
+            category_id=request.POST.get('category') or None,
+            publisher_id=request.POST.get('publisher') or None,
+        )
+        ActionLog.objects.create(
+            user=request.user,
+            action='add_book',
+            description=f'Добавлена книга "{book.title}" (ID: {book.id})'
+        )@login_required
+@user_passes_test(is_admin)
+def admin_add_book(request):
+    from library.models import Category, Publisher, Author
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        isbn = request.POST.get('isbn', '').strip()
+
+        if not title:
+            messages.error(request, 'Название книги обязательно.')
+            return redirect('admin_add_book')
+
+        if isbn and Book.objects.filter(isbn=isbn).exists():
+            messages.error(request, f'Книга с ISBN "{isbn}" уже существует.')
+            return redirect('admin_add_book')
+
+        book = Book.objects.create(
+            title=title,
+            isbn=isbn if isbn else None,
+            udc=request.POST.get('udc', '').strip(),
+            bbk=request.POST.get('bbk', '').strip(),
+            year=request.POST.get('year') or None,
+            pages=request.POST.get('pages') or None,
+            description=request.POST.get('description', '').strip(),
             category_id=request.POST.get('category') or None,
             publisher_id=request.POST.get('publisher') or None,
         )
@@ -423,7 +465,6 @@ def admin_add_book(request):
         'publishers': publishers,
         'authors': authors,
     })
-
 
 @login_required
 @user_passes_test(is_admin)
