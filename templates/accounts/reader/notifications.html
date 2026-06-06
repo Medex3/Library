@@ -14,7 +14,7 @@
     <ul style="list-style: none; padding: 0;">
         {% for n in notifications %}
         <li style="padding: 12px; margin-bottom: 8px; background: {% if n.is_read %}#f9f9f9{% else %}#e8f4fd{% endif %}; border-left: 4px solid #1a3c6e; border-radius: 6px;">
-            <strong>{{ n.title }}</strong>
+            <<strong>{{ n.get_type_display }}</strong>
             <p style="margin: 5px 0; color: #666;">{{ n.message }}</p>
             <small style="color: #999;">{{ n.created_at|date:"d.m.Y H:i" }}</small>
         </li>

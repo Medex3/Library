@@ -53,7 +53,21 @@
             </a>
         </div>
     {% endif %}
+    {% if book.file %}
+        <div class="book-download">
+            <a href="{{ book.file.url }}" class="btn btn-download" download>
+                📥 Скачать книгу (PDF)
+            </a>
+        </div>
+    {% endif %}
+
+    {% if user.is_authenticated and user.role == 'reader' %}
+        <div class="book-reserve">
+            <a href="{% url 'reader_reserve_book' book.id %}" class="btn">📖 Забронировать книгу</a>
+        </div>
+    {% endif %}
 </div>
+
 
 <a href="{% url 'catalog' %}">← Назад к каталогу</a>
 {% endblock %}

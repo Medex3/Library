@@ -4,8 +4,9 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.utils import timezone
 from .forms import CustomUserCreationForm
-from library.models import Book, BookInstance, Borrowing, Reservation, ActionLog, User
+from library.models import Book, BookInstance, Borrowing, Reservation, ActionLog, User, Notification
 from datetime import datetime, timedelta
+
 
 
 
@@ -228,6 +229,43 @@ def librarian_overdue(request):
         status='active', due_date__lt=timezone.now().date()
     ).select_related('book_instance__book', 'user')
     return render(request, 'accounts/librarian/overdue.html', {'overdue_list': overdue_list})
+
+@login_required
+@user_passes_test(is_librarian)
+def librarian_reservations(request):
+    reservations = Reservation.objects.filter(status='active').select_related('book', 'user').order_by('created_at')
+    return render(request, 'accounts/librarian/reservations.html', {'reservations': reservations})
+
+
+@login_required
+@user_passes_test(is_librarian)
+def librarian_fulfill_reservation(request, reservation_id):
+    reservation = get_object_or_404(Reservation, id=reservation_id, status='active')
+    reservation.status = 'fulfilled'
+    reservation.save()
+    # Создаём уведомление
+    Notification.objects.create(
+        user=reservation.user,
+        type='reservation_ready',
+        message=f'Книга "{reservation.book.title}" теперь доступна для вас. Обратитесь к библиотекарю.'
+    )
+    messages.success(request, f'Бронирование для {reservation.user} выполнено.')
+    return redirect('librarian_reservations')
+
+
+@login_required
+@user_passes_test(is_librarian)
+def librarian_cancel_reservation(request, reservation_id):
+    reservation = get_object_or_404(Reservation, id=reservation_id, status='active')
+    reservation.status = 'cancelled'
+    reservation.save()
+    Notification.objects.create(
+        user=reservation.user,
+        type='system',
+        message=f'Бронирование книги "{reservation.book.title}" отменено библиотекарем.'
+    )
+    messages.success(request, f'Бронирование для {reservation.user} отменено.')
+    return redirect('librarian_reservations')
 
 # ---------- Отчёты (библиотекарь + админ) ----------
 from .reports import report_borrowings_by_period, report_overdue, report_category_stats

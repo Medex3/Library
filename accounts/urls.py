@@ -24,6 +24,12 @@ urlpatterns = [
     path('librarian/issue/', views.librarian_issue_book, name='librarian_issue_book'),
     path('librarian/return/<int:borrowing_id>/', views.librarian_return_book, name='librarian_return_book'),
     path('librarian/overdue/', views.librarian_overdue, name='librarian_overdue'),
+    path('librarian/reservations/', views.librarian_reservations, name='librarian_reservations'),
+    path('librarian/fulfill-reservation/<int:reservation_id>/', views.librarian_fulfill_reservation,
+         name='librarian_fulfill_reservation'),
+    path('librarian/cancel-reservation/<int:reservation_id>/', views.librarian_cancel_reservation,
+         name='librarian_cancel_reservation'),
+
 
     # Отчёты (библиотекарь + админ)
     path('librarian/reports/', views.reports_index, name='reports_index'),
