@@ -44,6 +44,7 @@
                         <li><a href="{% url 'admin_users' %}">Пользователи</a></li>
                         <li><a href="{% url 'admin_add_book' %}">Добавить книгу</a></li>
                         <li><a href="{% url 'admin_logs' %}">Логи</a></li>
+                        <li><a href="{% url 'admin_references' %}">Справочники</a></li>
                         <li><a href="{% url 'reports_index' %}">📊 Отчёты</a></li>
                     {% elif user.role == 'librarian' %}
                         <li><a href="{% url 'librarian_dashboard' %}">Панель библиотекаря</a></li>

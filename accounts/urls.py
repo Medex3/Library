@@ -44,4 +44,6 @@ urlpatterns = [
     path('admin-panel/users/<int:user_id>/', views.admin_user_edit, name='admin_user_edit'),
     path('admin-panel/add-book/', views.admin_add_book, name='admin_add_book'),
     path('admin-panel/logs/', views.admin_logs, name='admin_logs'),
+    path('admin-panel/references/', views.admin_references, name='admin_references'),
+
 ]

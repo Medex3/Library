@@ -429,3 +429,34 @@ def admin_add_book(request):
 def admin_logs(request):
     logs = ActionLog.objects.select_related('user').all().order_by('-timestamp')[:100]
     return render(request, 'accounts/admin/logs.html', {'logs': logs})
+
+@login_required
+@user_passes_test(is_admin)
+def admin_references(request):
+    from library.models import Category, Publisher, Author
+    categories = Category.objects.all().order_by('name')
+    publishers = Publisher.objects.all().order_by('name')
+    authors = Author.objects.all().order_by('last_name')
+
+    if request.method == 'POST':
+        ref_type = request.POST.get('ref_type')
+        name = request.POST.get('name', '').strip()
+        if ref_type == 'category' and name:
+            Category.objects.create(name=name)
+            messages.success(request, f'Категория "{name}" добавлена.')
+        elif ref_type == 'publisher' and name:
+            city = request.POST.get('city', '').strip()
+            Publisher.objects.create(name=name, city=city)
+            messages.success(request, f'Издательство "{name}" добавлено.')
+        elif ref_type == 'author' and name:
+            last_name = request.POST.get('last_name', '').strip()
+            first_name = request.POST.get('first_name', '').strip()
+            Author.objects.create(last_name=last_name, first_name=first_name)
+            messages.success(request, f'Автор "{last_name} {first_name}" добавлен.')
+        return redirect('admin_references')
+
+    return render(request, 'accounts/admin/references.html', {
+        'categories': categories,
+        'publishers': publishers,
+        'authors': authors,
+    })

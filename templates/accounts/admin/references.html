@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Справочники{% endblock %}
+
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'admin_dashboard' %}">Панель администратора</a> &raquo;
+    Справочники
+</div>
+
+<h1>📂 Управление справочниками</h1>
+
+<!-- Категории -->
+<h2>Категории</h2>
+<form method="post" style="margin-bottom:1rem;">
+    {% csrf_token %}
+    <input type="hidden" name="ref_type" value="category">
+    <input type="text" name="name" placeholder="Название категории" required>
+    <button type="submit" class="btn">➕ Добавить</button>
+</form>
+<table>
+    <tr><th>ID</th><th>Название</th></tr>
+    {% for c in categories %}
+    <tr><td>{{ c.id }}</td><td>{{ c.name }}</td></tr>
+    {% empty %}<tr><td colspan="2">Нет категорий</td></tr>{% endfor %}
+</table>
+
+<!-- Издательства -->
+<h2>Издательства</h2>
+<form method="post" style="margin-bottom:1rem;">
+    {% csrf_token %}
+    <input type="hidden" name="ref_type" value="publisher">
+    <input type="text" name="name" placeholder="Название" required>
+    <input type="text" name="city" placeholder="Город">
+    <button type="submit" class="btn">➕ Добавить</button>
+</form>
+<table>
+    <tr><th>ID</th><th>Название</th><th>Город</th></tr>
+    {% for p in publishers %}
+    <tr><td>{{ p.id }}</td><td>{{ p.name }}</td><td>{{ p.city|default:"—" }}</td></tr>
+    {% empty %}<tr><td colspan="3">Нет издательств</td></tr>{% endfor %}
+</table>
+
+<!-- Авторы -->
+<h2>Авторы</h2>
+<form method="post" style="margin-bottom:1rem;">
+    {% csrf_token %}
+    <input type="hidden" name="ref_type" value="author">
+    <input type="text" name="last_name" placeholder="Фамилия" required>
+    <input type="text" name="first_name" placeholder="Имя">
+    <button type="submit" class="btn">➕ Добавить</button>
+</form>
+<table>
+    <tr><th>ID</th><th>Фамилия</th><th>Имя</th></tr>
+    {% for a in authors %}
+    <tr><td>{{ a.id }}</td><td>{{ a.last_name }}</td><td>{{ a.first_name|default:"—" }}</td></tr>
+    {% empty %}<tr><td colspan="3">Нет авторов</td></tr>{% endfor %}
+</table>
+
+<a href="{% url 'admin_dashboard' %}">← Назад к панели</a>
+{% endblock %}
