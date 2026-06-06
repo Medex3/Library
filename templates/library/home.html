@@ -1,15 +1,42 @@
 {% extends 'base.html' %}
 {% block title %}Главная — Электронная библиотека{% endblock %}
 {% block content %}
-<h1>Добро пожаловать в электронную библиотеку</h1>
-<p>Поиск и доступ к учебной литературе университета онлайн.</p>
+<div style="text-align: center; padding: 2rem 0;">
+    <h1>📚 Добро пожаловать в электронную библиотеку</h1>
+    <p style="font-size: 1.2rem; color: #666; max-width: 700px; margin: 1rem auto;">
+        Электронная библиотека Московского университета имени С.Ю. Витте (МУИВ) —
+        это современная платформа для доступа к учебной, научной и методической литературе.
+        Здесь вы можете искать книги, бронировать печатные издания и скачивать электронные версии.
+    </p>
+    <p>
+        <a href="{% url 'catalog' %}" class="btn" style="font-size: 1.1rem; padding: 0.8rem 2rem;">📖 Перейти в каталог</a>
+    </p>
+</div>
 
-<h2>Новые поступления</h2>
-<ul>
-    {% for book in recent_books %}
-        <li>{{ book.title }} ({{ book.year }})</li>
-    {% empty %}
-        <li>Каталог пока пуст</li>
-    {% endfor %}
-</ul>
+<h2>🆕 Новые поступления</h2>
+{% if recent_books %}
+    <div class="book-list">
+        {% for book in recent_books %}
+            <div class="book-card">
+                {% if book.cover_image %}
+                    <div class="book-card-cover">
+                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="max-width: 100px; max-height: 150px;">
+                    </div>
+                {% endif %}
+                <h3><a href="{% url 'book_detail' book.pk %}">{{ book.title }}</a></h3>
+                <p>Авторы:
+                    {% for author in book.authors.all %}
+                        {{ author }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        не указаны
+                    {% endfor %}
+                </p>
+                <p>Год: {{ book.year|default:"не указан" }}</p>
+                <p>Категория: {{ book.category.name|default:"—" }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>Каталог пока пуст. <a href="{% url 'admin_add_book' %}">Добавить первую книгу</a>.</p>
+{% endif %}
 {% endblock %}
