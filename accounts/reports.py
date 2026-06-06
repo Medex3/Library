@@ -1,10 +1,12 @@
 import io
+import openpyxl
 from datetime import date, timedelta
-from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from django.http import HttpResponse
 from django.utils import timezone
 from library.models import Borrowing, Book, Category
+from openpyxl import Workbook
+
 
 
 def make_header_style():
@@ -39,11 +41,17 @@ def auto_width(ws):
     """Автоподбор ширины столбцов"""
     for col in ws.columns:
         max_len = 0
-        col_letter = col[0].column_letter
+        col_letter = None
         for cell in col:
+            # Пропускаем объединённые ячейки
+            if isinstance(cell, openpyxl.cell.cell.MergedCell):
+                continue
+            if col_letter is None:
+                col_letter = cell.column_letter
             if cell.value:
                 max_len = max(max_len, len(str(cell.value)))
-        ws.column_dimensions[col_letter].width = min(max_len + 3, 50)
+        if col_letter:
+            ws.column_dimensions[col_letter].width = min(max_len + 3, 50)
 
 
 # ---------------------------------------------------------------------------
