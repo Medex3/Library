@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Ошибка сервера{% endblock %}
+{% block content %}
+<div style="text-align: center; padding: 4rem 0;">
+    <h1 style="font-size: 4rem; color: #dc3545;">500</h1>
+    <p style="font-size: 1.2rem; color: #666;">Внутренняя ошибка сервера. Мы уже работаем над её исправлением.</p>
+    <a href="{% url 'home' %}" class="btn" style="margin-top: 1.5rem;">🏠 На главную</a>
+</div>
+{% endblock %}

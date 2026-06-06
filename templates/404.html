@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Страница не найдена{% endblock %}
+{% block content %}
+<div style="text-align: center; padding: 4rem 0;">
+    <h1 style="font-size: 4rem; color: #1a3c6e;">404</h1>
+    <p style="font-size: 1.2rem; color: #666;">Страница не найдена. Возможно, она была удалена или вы ошиблись адресом.</p>
+    <a href="{% url 'home' %}" class="btn" style="margin-top: 1.5rem;">🏠 На главную</a>
+</div>
+{% endblock %}
