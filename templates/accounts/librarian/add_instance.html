@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Добавление экземпляра{% endblock %}
+
+{% block content %}
+<div class="breadcrumbs">
+    <a href="{% url 'home' %}">Главная</a> &raquo;
+    <a href="{% url 'librarian_dashboard' %}">Панель библиотекаря</a> &raquo;
+    Добавление экземпляра
+</div>
+
+<h1>📚 Добавление экземпляра книги</h1>
+
+<form method="post" class="report-form">
+    {% csrf_token %}
+    <p>
+        <label>Книга:</label>
+        <select name="book_id" required style="width:100%; max-width:500px;">
+            <option value="">— Выберите книгу —</option>
+            {% for book in books %}
+                <option value="{{ book.id }}">{{ book.title }} ({{ book.year|default:"—" }})</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p>
+        <label>Инвентарный номер:</label>
+        <input type="text" name="inventory_number" placeholder="Например: 2026-001" style="width:100%; max-width:300px;">
+    </p>
+    <button type="submit" class="btn">➕ Добавить экземпляр</button>
+</form>
+
+{% if recent_instances %}
+    <h2>Последние добавленные экземпляры</h2>
+    <table>
+        <tr><th>Инв. №</th><th>Книга</th><th>Статус</th></tr>
+        {% for inst in recent_instances %}
+        <tr>
+            <td>{{ inst.inventory_number|default:"—" }}</td>
+            <td>{{ inst.book.title }}</td>
+            <td>{{ inst.get_status_display }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+<a href="{% url 'librarian_dashboard' %}">← Назад к панели</a>
+{% endblock %}

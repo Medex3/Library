@@ -29,6 +29,7 @@ urlpatterns = [
          name='librarian_fulfill_reservation'),
     path('librarian/cancel-reservation/<int:reservation_id>/', views.librarian_cancel_reservation,
          name='librarian_cancel_reservation'),
+    path('librarian/add-instance/', views.librarian_add_instance, name='librarian_add_instance'),
 
 
     # Отчёты (библиотекарь + админ)

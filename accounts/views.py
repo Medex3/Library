@@ -267,6 +267,33 @@ def librarian_cancel_reservation(request, reservation_id):
     messages.success(request, f'Бронирование для {reservation.user} отменено.')
     return redirect('librarian_reservations')
 
+@login_required
+@user_passes_test(is_librarian)
+def librarian_add_instance(request):
+    if request.method == 'POST':
+        book_id = request.POST.get('book_id')
+        inventory_number = request.POST.get('inventory_number', '')
+        book = get_object_or_404(Book, id=book_id)
+        BookInstance.objects.create(
+            book=book,
+            inventory_number=inventory_number,
+            status='available'
+        )
+        ActionLog.objects.create(
+            user=request.user,
+            action='add_book',
+            description=f'Добавлен экземпляр книги "{book.title}" (инв. № {inventory_number})'
+        )
+        messages.success(request, f'Экземпляр книги "{book.title}" добавлен.')
+        return redirect('librarian_add_instance')
+
+    books = Book.objects.all().order_by('title')
+    recent_instances = BookInstance.objects.select_related('book').order_by('-id')[:20]
+    return render(request, 'accounts/librarian/add_instance.html', {
+        'books': books,
+        'recent_instances': recent_instances,
+    })
+
 # ---------- Отчёты (библиотекарь + админ) ----------
 from .reports import report_borrowings_by_period, report_overdue, report_category_stats
 from datetime import datetime
