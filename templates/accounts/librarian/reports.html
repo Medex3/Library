@@ -8,29 +8,29 @@
     Отчёты
 </div>
 
-<h1>📊 Отчёты</h1>
+<h1>Отчёты</h1>
 
 <div class="reports-grid">
     <div class="report-card">
-        <h3>📋 Выдачи за период</h3>
+        <h3>Выдачи за период</h3>
         <p>Список всех выдач с фильтром по дате «с–по».</p>
         <form method="get" action="{% url 'report_borrowings' %}" class="report-form">
             <label>С: <input type="date" name="start" required></label>
             <label>По: <input type="date" name="end" required></label>
-            <button type="submit" class="btn">📥 Скачать .xlsx</button>
+            <button type="submit" class="btn">Скачать .xlsx</button>
         </form>
     </div>
 
     <div class="report-card">
-        <h3>⚠️ Должники</h3>
+        <h3>⚠Должники</h3>
         <p>Читатели с просроченными книгами на текущую дату.</p>
-        <a href="{% url 'report_overdue' %}" class="btn btn-download">📥 Скачать .xlsx</a>
+        <a href="{% url 'report_overdue' %}" class="btn btn-download">Скачать .xlsx</a>
     </div>
 
     <div class="report-card">
-        <h3>📂 Статистика по категориям</h3>
+        <h3>Статистика по категориям</h3>
         <p>Количество книг и выдач в разрезе категорий.</p>
-        <a href="{% url 'report_categories' %}" class="btn btn-download">📥 Скачать .xlsx</a>
+        <a href="{% url 'report_categories' %}" class="btn btn-download">Скачать .xlsx</a>
     </div>
 </div>
 
