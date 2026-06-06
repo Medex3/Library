@@ -8,20 +8,26 @@ from library.models import Book, BookInstance, Borrowing, Reservation, ActionLog
 from datetime import datetime, timedelta
 
 
+"""
+Представления для аутентификации и личных кабинетов трёх ролей:
+- Читатель: dashboard, выдачи, история, бронирования, уведомления, профиль
+- Библиотекарь: dashboard, выдачи, выдача/возврат, просрочки, бронирования, экземпляры
+- Администратор: dashboard, пользователи, книги, логи, справочники, статистика
+- Общее: вход, выход, регистрация, отчёты
+"""
 
-
-
-
+"""Проверка: пользователь — библиотекарь или администратор"""
 def is_librarian(user):
     return user.role in ['librarian', 'admin']
 
-
+"""Проверка: пользователь — администратор"""
 def is_admin(user):
     return user.role == 'admin'
 
 
 # ---------- Аутентификация ----------
 
+"""Регистрация нового пользователя (по умолчанию роль 'reader')"""
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -36,7 +42,9 @@ def register(request):
         form = CustomUserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})
 
-
+"""
+Вход в систему.
+"""
 def user_login(request):
     from django.contrib.auth.forms import AuthenticationForm
     if request.method == 'POST':
@@ -59,7 +67,7 @@ def user_login(request):
         form = AuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})
 
-
+"""Выход из системы с записью в лог"""
 def user_logout(request):
     if request.user.is_authenticated:
         ActionLog.objects.create(
@@ -74,6 +82,7 @@ def user_logout(request):
 
 # ---------- Читатель ----------
 
+"""Главная страница личного кабинета читателя: активные выдачи, бронирования, просрочки"""
 @login_required
 def reader_dashboard(request):
     active_borrowings = Borrowing.objects.filter(user=request.user, status='active')
@@ -85,12 +94,13 @@ def reader_dashboard(request):
         'overdue_borrowings': overdue_borrowings,
     })
 
-
+"""Список текущих выдач читателя"""
 @login_required
 def reader_borrowings(request):
     borrowings = Borrowing.objects.filter(user=request.user).order_by('-borrowed_date')
     return render(request, 'accounts/reader/borrowings.html', {'borrowings': borrowings})
 
+"""История чтения: список возвращённых книг"""
 @login_required
 def reader_history(request):
     history = Borrowing.objects.filter(
@@ -99,6 +109,7 @@ def reader_history(request):
     ).select_related('book_instance__book').order_by('-returned_date')
     return render(request, 'accounts/reader/history.html', {'history': history})
 
+"""Уведомления читателя (системные, о просрочках, о доступности книг)"""
 @login_required
 def reader_notifications(request):
     from library.models import Notification
@@ -107,12 +118,13 @@ def reader_notifications(request):
     ).order_by('-created_at')[:50]
     return render(request, 'accounts/reader/notifications.html', {'notifications': notifications})
 
+"""Список активных бронирований читателя"""
 @login_required
 def reader_reservations(request):
     reservations = Reservation.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'accounts/reader/reservations.html', {'reservations': reservations})
 
-
+"""Забронировать книгу по ID (с проверкой на дубликат)"""
 @login_required
 def reader_reserve_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
@@ -123,7 +135,7 @@ def reader_reserve_book(request, book_id):
         messages.success(request, f'Книга "{book.title}" забронирована.')
     return redirect('reader_reservations')
 
-
+"""Отменить бронирование по ID"""
 @login_required
 def reader_cancel_reservation(request, reservation_id):
     reservation = get_object_or_404(Reservation, id=reservation_id, user=request.user)
@@ -132,7 +144,7 @@ def reader_cancel_reservation(request, reservation_id):
     messages.success(request, 'Бронирование отменено.')
     return redirect('reader_reservations')
 
-
+"""Редактирование профиля читателя (email, телефон)"""
 @login_required
 def reader_profile_edit(request):
     if request.method == 'POST':
@@ -146,6 +158,7 @@ def reader_profile_edit(request):
 
 # ---------- Библиотекарь ----------
 
+"""Главная панель библиотекаря: сводка по выдачам, просрочкам, бронированиям"""
 @login_required
 @user_passes_test(is_librarian)
 def librarian_dashboard(request):
@@ -160,14 +173,14 @@ def librarian_dashboard(request):
         'total_books': total_books,
     })
 
-
+"""Все выдачи с информацией о книге и читателе"""
 @login_required
 @user_passes_test(is_librarian)
 def librarian_borrowings(request):
     borrowings = Borrowing.objects.select_related('book_instance__book', 'user').all().order_by('-borrowed_date')
     return render(request, 'accounts/librarian/borrowings.html', {'borrowings': borrowings})
 
-
+"""Выдача книги читателю: выбор экземпляра и пользователя, срок — 14 дней"""
 @login_required
 @user_passes_test(is_librarian)
 def librarian_issue_book(request):
@@ -202,7 +215,7 @@ def librarian_issue_book(request):
         'readers': readers,
     })
 
-
+"""Возврат книги"""
 @login_required
 @user_passes_test(is_librarian)
 def librarian_return_book(request, borrowing_id):
@@ -222,7 +235,7 @@ def librarian_return_book(request, borrowing_id):
         return redirect('librarian_borrowings')
     return render(request, 'accounts/librarian/return_book.html', {'borrowing': borrowing})
 
-
+"""Список просроченных выдач"""
 @login_required
 @user_passes_test(is_librarian)
 def librarian_overdue(request):
@@ -231,13 +244,14 @@ def librarian_overdue(request):
     ).select_related('book_instance__book', 'user')
     return render(request, 'accounts/librarian/overdue.html', {'overdue_list': overdue_list})
 
+"""Управление бронированиями: список активных с кнопками «Выполнить» и «Отменить»"""
 @login_required
 @user_passes_test(is_librarian)
 def librarian_reservations(request):
     reservations = Reservation.objects.filter(status='active').select_related('book', 'user').order_by('created_at')
     return render(request, 'accounts/librarian/reservations.html', {'reservations': reservations})
 
-
+"""Подтверждение бронирования: статус → 'fulfilled', уведомление читателю"""
 @login_required
 @user_passes_test(is_librarian)
 def librarian_fulfill_reservation(request, reservation_id):
@@ -253,7 +267,7 @@ def librarian_fulfill_reservation(request, reservation_id):
     messages.success(request, f'Бронирование для {reservation.user} выполнено.')
     return redirect('librarian_reservations')
 
-
+"""Отмена бронирования: статус → 'cancelled', уведомление читателю"""
 @login_required
 @user_passes_test(is_librarian)
 def librarian_cancel_reservation(request, reservation_id):
@@ -268,6 +282,7 @@ def librarian_cancel_reservation(request, reservation_id):
     messages.success(request, f'Бронирование для {reservation.user} отменено.')
     return redirect('librarian_reservations')
 
+"""Добавление нового экземпляра книги с проверкой уникальности инвентарного номера"""
 @login_required
 @user_passes_test(is_librarian)
 def librarian_add_instance(request):
@@ -303,18 +318,17 @@ def librarian_add_instance(request):
 from .reports import report_borrowings_by_period, report_overdue, report_category_stats
 from datetime import datetime
 
-
+"""Страница-оглавление всех отчётов"""
 @login_required
 @user_passes_test(is_librarian)
 def reports_index(request):
-    """Страница-оглавление всех отчётов"""
+
     return render(request, 'accounts/librarian/reports.html')
 
-
+"""Генерация отчёта: выдачи за период (по умолчанию 30 дней)"""
 @login_required
 @user_passes_test(is_librarian)
 def report_borrowings_view(request):
-    """Генерация отчёта: выдачи за период"""
     today = timezone.now().date()
     start_str = request.GET.get('start', (today - timedelta(days=30)).strftime('%Y-%m-%d'))
     end_str = request.GET.get('end', today.strftime('%Y-%m-%d'))
@@ -327,7 +341,7 @@ def report_borrowings_view(request):
     )
     return report_borrowings_by_period(start_date, end_date)
 
-
+"""Генерация отчёта: должники"""
 @login_required
 @user_passes_test(is_librarian)
 def report_overdue_view(request):
@@ -336,10 +350,9 @@ def report_overdue_view(request):
         action='report',
         description='Сформирован отчёт "Должники"'
     )
-    """Генерация отчёта: должники"""
     return report_overdue()
 
-
+"""Генерация отчёта: статистика по категориям"""
 @login_required
 @user_passes_test(is_librarian)
 def report_category_view(request):
@@ -348,12 +361,12 @@ def report_category_view(request):
         action='report',
         description='Сформирован отчёт "Статистика по категориям"'
     )
-    """Генерация отчёта: статистика по категориям"""
     return report_category_stats()
 
 
 # ---------- Администратор ----------
 
+"""Главная панель администратора: количество пользователей и книг"""
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard(request):
@@ -369,7 +382,7 @@ def admin_dashboard(request):
         'total_books': total_books,
     })
 
-
+"""Список всех пользователей с сортировкой по роли и фамилии"""
 @login_required
 @user_passes_test(is_admin)
 def admin_users(request):
@@ -377,7 +390,7 @@ def admin_users(request):
     users = User.objects.all().order_by('role', 'last_name')
     return render(request, 'accounts/admin/users.html', {'users': users})
 
-
+"""Редактирование пользователя: роль, ФИО, email, телефон, активность"""
 @login_required
 @user_passes_test(is_admin)
 def admin_user_edit(request, user_id):
@@ -395,39 +408,11 @@ def admin_user_edit(request, user_id):
         return redirect('admin_users')
     return render(request, 'accounts/admin/user_edit.html', {'edit_user': user})
 
-
-@login_required
-@user_passes_test(is_admin)
-def admin_add_book(request):
-    from library.models import Category, Publisher, Author
-    if request.method == 'POST':
-        title = request.POST.get('title', '').strip()
-        isbn = request.POST.get('isbn', '').strip()
-
-        if not title:
-            messages.error(request, 'Название книги обязательно.')
-            return redirect('admin_add_book')
-
-        if isbn and Book.objects.filter(isbn=isbn).exists():
-            messages.error(request, f'Книга с ISBN "{isbn}" уже существует.')
-            return redirect('admin_add_book')
-
-        book = Book.objects.create(
-            title=title,
-            isbn=isbn,
-            udc=request.POST.get('udc', '').strip(),
-            bbk=request.POST.get('bbk', '').strip(),
-            year=request.POST.get('year') or None,
-            pages=request.POST.get('pages') or None,
-            description=request.POST.get('description', '').strip(),
-            category_id=request.POST.get('category') or None,
-            publisher_id=request.POST.get('publisher') or None,
-        )
-        ActionLog.objects.create(
-            user=request.user,
-            action='add_book',
-            description=f'Добавлена книга "{book.title}" (ID: {book.id})'
-        )@login_required
+"""
+Добавление новой книги с проверками:
+- Название обязательно
+- ISBN уникален (пустой ISBN → None)
+"""
 @user_passes_test(is_admin)
 def admin_add_book(request):
     from library.models import Category, Publisher, Author
@@ -470,12 +455,14 @@ def admin_add_book(request):
         'authors': authors,
     })
 
+"""Журнал действий: последние 100 записей"""
 @login_required
 @user_passes_test(is_admin)
 def admin_logs(request):
     logs = ActionLog.objects.select_related('user').all().order_by('-timestamp')[:100]
     return render(request, 'accounts/admin/logs.html', {'logs': logs})
 
+"""Управление справочниками: добавление категорий, издательств, авторов"""
 @login_required
 @user_passes_test(is_admin)
 def admin_references(request):
@@ -507,6 +494,11 @@ def admin_references(request):
         'authors': authors,
     })
 
+"""
+Статистика системы:
+- Количество пользователей, книг, экземпляров, выдач, просрочек
+- Топ-5 книг по количеству выдач (через annotate Count)
+"""
 @login_required
 @user_passes_test(is_admin)
 def admin_statistics(request):
@@ -528,7 +520,6 @@ def admin_statistics(request):
     total_publishers = Publisher.objects.count()
     total_feedback = Feedback.objects.count()
 
-    # Топ-5 книг по выдачам
     top_books = Book.objects.annotate(
         borrow_count=Count('instances__borrowing')
     ).order_by('-borrow_count')[:5]
