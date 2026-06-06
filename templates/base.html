@@ -9,6 +9,7 @@
 </head>
 <body>
     <header>
+        <!-- Навигация пользователя: вход/выход, ссылка на ЛК -->
         <div class="user-nav">
             {% if user.is_authenticated %}
                 {% if user.role == 'admin' %}
@@ -24,6 +25,8 @@
                 <a href="{% url 'register' %}">Регистрация</a>
             {% endif %}
         </div>
+
+        <!-- Системные сообщения (успех, ошибка, предупреждение) -->
         {% if messages %}
             <ul class="messages">
                 {% for message in messages %}
@@ -31,6 +34,8 @@
                 {% endfor %}
             </ul>
         {% endif %}
+
+        <!-- Главное меню. Зависит от роли пользователя -->
         <nav>
             <ul class="menu">
                 <li><a href="{% url 'home' %}">Главная</a></li>
@@ -40,6 +45,7 @@
                 <li><a href="{% url 'feedback' %}">Обратная связь</a></li>
                 {% if user.is_authenticated %}
                     {% if user.role == 'admin' %}
+                        <!-- Меню администратора -->
                         <li><a href="{% url 'admin_dashboard' %}">Админ-панель</a></li>
                         <li><a href="{% url 'admin_users' %}">Пользователи</a></li>
                         <li><a href="{% url 'admin_add_book' %}">Добавить книгу</a></li>
@@ -48,6 +54,7 @@
                         <li><a href="{% url 'reports_index' %}">Отчёты</a></li>
                         <li><a href="{% url 'admin_statistics' %}">Статистика</a></li>
                     {% elif user.role == 'librarian' %}
+                        <!-- Меню библиотекаря -->
                         <li><a href="{% url 'librarian_dashboard' %}">Панель библиотекаря</a></li>
                         <li><a href="{% url 'librarian_issue_book' %}">Выдать книгу</a></li>
                         <li><a href="{% url 'librarian_overdue' %}">Просрочки</a></li>
@@ -55,6 +62,7 @@
                         <li><a href="{% url 'librarian_add_instance' %}">Добавить экземпляр</a></li>
                         <li><a href="{% url 'reports_index' %}">Отчёты</a></li>
                     {% else %}
+                        <!-- Меню читателя -->
                         <li><a href="{% url 'reader_dashboard' %}">Личный кабинет</a></li>
                         <li><a href="{% url 'reader_borrowings' %}">Мои выдачи</a></li>
                         <li><a href="{% url 'reader_reservations' %}">Бронирования</a></li>

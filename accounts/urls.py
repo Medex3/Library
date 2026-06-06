@@ -1,6 +1,16 @@
 from django.urls import path
 from . import views
 
+"""
+Маршруты приложения accounts.
+
+Структура URL-адресов по ролям:
+- /register/, /login/, /logout/ — аутентификация
+- /reader/... — личный кабинет читателя (8 страниц)
+- /librarian/... — панель библиотекаря (8 страниц + отчёты)
+- /admin-panel/... — панель администратора (7 страниц)
+"""
+
 urlpatterns = [
     # Аутентификация
     path('register/', views.register, name='register'),
