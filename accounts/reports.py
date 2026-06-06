@@ -1,16 +1,24 @@
 import io
 import openpyxl
 from datetime import date, timedelta
+from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from django.http import HttpResponse
 from django.utils import timezone
 from library.models import Borrowing, Book, Category
-from openpyxl import Workbook
 
+"""
+Генерация отчётов в формате .xlsx (Excel) с помощью библиотеки openpyxl.
 
+Три типа отчётов:
+1. Выдачи за период — фильтр по дате «с–по», список всех выдач
+2. Должники — читатели с просроченными книгами на текущую дату
+3. Статистика по категориям — количество книг и выдач в разрезе категорий
 
+"""
+
+"""Стиль для заголовков таблиц"""
 def make_header_style():
-    """Стиль для заголовков таблиц"""
     return {
         'font': Font(bold=True, size=11, color='FFFFFF'),
         'fill': PatternFill(start_color='4472C4', end_color='4472C4', fill_type='solid'),
@@ -23,9 +31,8 @@ def make_header_style():
         ),
     }
 
-
+"""Стиль для обычных ячеек"""
 def make_cell_style():
-    """Стиль для обычных ячеек"""
     return {
         'alignment': Alignment(vertical='center', wrap_text=True),
         'border': Border(
@@ -36,9 +43,8 @@ def make_cell_style():
         ),
     }
 
-
+"""Автоподбор ширины столбцов"""
 def auto_width(ws):
-    """Автоподбор ширины столбцов"""
     for col in ws.columns:
         max_len = 0
         col_letter = None
@@ -57,11 +63,13 @@ def auto_width(ws):
 # ---------------------------------------------------------------------------
 # ОТЧЁТ 1: Выдачи за период
 # ---------------------------------------------------------------------------
+
+"""
+Отчёт «Выдачи за период».
+Фильтрует выдачи по дате borrowed_date в диапазоне [start_date, end_date].
+Колонки: №, Дата выдачи, Читатель, Email, Книга, Автор(ы), Библиотекарь, Дата возврата.
+"""
 def report_borrowings_by_period(start_date, end_date):
-    """
-    Возвращает HttpResponse с .xlsx-файлом:
-    список выдач за указанный период [start_date, end_date].
-    """
     borrowings = Borrowing.objects.select_related(
         'book_instance__book', 'user', 'issued_by'
     ).filter(
@@ -135,10 +143,13 @@ def report_borrowings_by_period(start_date, end_date):
 # ---------------------------------------------------------------------------
 # ОТЧЁТ 2: Должники (просроченные книги)
 # ---------------------------------------------------------------------------
+
+"""
+Отчёт «Должники».
+Список читателей с активными выдачами, у которых срок возврата истёк.
+Колонки: №, Читатель, Email, Телефон, Книга, Дата выдачи, Просрочено (дней).
+"""
 def report_overdue():
-    """
-    Читатели, у которых есть активные выдачи с due_date < сегодня.
-    """
     today = timezone.now().date()
     overdue = Borrowing.objects.select_related(
         'book_instance__book', 'user'
@@ -205,10 +216,13 @@ def report_overdue():
 # ---------------------------------------------------------------------------
 # ОТЧЁТ 3: Статистика по категориям
 # ---------------------------------------------------------------------------
+
+"""
+Отчёт «Статистика по категориям».
+Считает количество книг в каждой категории и общее количество выдач.
+Колонки: №, Категория, Книг в каталоге, Всего выдач.
+"""
 def report_category_stats():
-    """
-    Сколько книг в каждой категории и сколько выдач (всего).
-    """
     wb = Workbook()
     ws = wb.active
     ws.title = 'Статистика по категориям'
