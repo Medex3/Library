@@ -1,23 +1,26 @@
 {% extends 'base.html' %}
-{% block title %}Просрочки{% endblock %}
+{% block title %}Панель администратора{% endblock %}
 {% block content %}
 <div class="breadcrumbs">
     <a href="{% url 'home' %}">Главная</a> &raquo;
-    <a href="{% url 'librarian_dashboard' %}">Панель библиотекаря</a> &raquo;
-    Просрочки
+    Панель администратора
 </div>
-<h1>Просроченные выдачи</h1>
-<table>
-    <tr><th>Книга</th><th>Читатель</th><th>Должна была вернуться</th><th>Дней просрочки</th></tr>
-    {% for b in overdue_list %}
-    <tr>
-        <td>{{ b.book_instance.book.title }}</td>
-        <td>{{ b.user.last_name }} {{ b.user.first_name }}</td>
-        <td>{{ b.due_date }}</td>
-        <td>{{ b.due_date|timesince }}</td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="4">Просрочек нет</td></tr>
-    {% endfor %}
-</table>
+<h1>Панель администратора</h1>
+
+<div class="stats-grid">
+    <div class="stat-card"><span class="stat-number">{{ total_users }}</span><span class="stat-label">Пользователей</span></div>
+    <div class="stat-card"><span class="stat-number">{{ total_readers }}</span><span class="stat-label">Читателей</span></div>
+    <div class="stat-card"><span class="stat-number">{{ total_librarians }}</span><span class="stat-label">Библиотекарей</span></div>
+    <div class="stat-card"><span class="stat-number">{{ total_books }}</span><span class="stat-label">Книг</span></div>
+</div>
+
+<h2>Быстрые действия</h2>
+<ul>
+    <li><a href="{% url 'admin_users' %}">Управление пользователями</a></li>
+    <li><a href="{% url 'admin_add_book' %}">Добавить книгу</a></li>
+    <li><a href="{% url 'admin_logs' %}">Логи действий</a></li>
+    <li><a href="{% url 'admin_references' %}">Справочники</a></li>
+    <li><a href="{% url 'admin_statistics' %}">Статистика</a></li>
+    <li><a href="{% url 'reports_index' %}">Отчёты</a></li>
+</ul>
 {% endblock %}
