@@ -38,9 +38,9 @@ def catalog(request):
 
     if query:
         books = books.filter(
-            models.Q(title__icontains=query) |
-            models.Q(authors__last_name__icontains=query) |
-            models.Q(isbn__icontains=query)
+            models.Q(title__iregex=query) |
+            models.Q(authors__last_name__iregex=query) |
+            models.Q(isbn__iregex=query)
         ).distinct()
 
     if category_id:

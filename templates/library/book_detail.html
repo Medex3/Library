@@ -53,13 +53,6 @@
             </a>
         </div>
     {% endif %}
-    {% if book.file %}
-        <div class="book-download">
-            <a href="{{ book.file.url }}" class="btn btn-download" download>
-                📥 Скачать книгу (PDF)
-            </a>
-        </div>
-    {% endif %}
 
     {% if user.is_authenticated and user.role == 'reader' %}
         <div class="book-reserve">
